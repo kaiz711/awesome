@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
 				case SDLK_SPACE:
 				{
 					message = NULL;
+					init();
 					main_game();
 					break;
 				}
@@ -55,9 +56,10 @@ int main(int argc, char* argv[])
 			{
 				quit = true;
 			}
-			clean_up();
+			
 		}
+		
 	}
-
+	clean_up();
 	return 0;
 }
