@@ -96,7 +96,6 @@ void main_game()
 					new_ball.y = -(5+rand()% 350);
 					new_ball.w = new_ball.h = BALL_SIZE;
 					balls[i] = new_ball;
-					score++;
 				}
 			}
 			current_balls = MAX_BALLS;
@@ -144,10 +143,11 @@ void main_game()
 			if (balls[i].y > SCREEN_HEIGHT )
 			{
 				current_balls--;
+				score++;
 			}
 			SDL_Rect player_rect;
 			player_rect.x = player_position - PLAYER_WIDTH/2;
-			player_rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
+			player_rect.y = player_position_y - PLAYER_HEIGHT;
 			player_rect.w = PLAYER_WIDTH;
 			player_rect.h = PLAYER_HEIGHT;
 			if( intersects(balls[i], player_rect) )
