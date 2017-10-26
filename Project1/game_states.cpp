@@ -62,6 +62,7 @@ void main_game()
 {
 	bool quit = false;
 	int player_position = SCREEN_WIDTH/2;
+	int player_position_y = SCREEN_HEIGHT/2;
 	Uint8 *keystates = NULL;
 	int start_time  = SDL_GetTicks();
 	int current_balls = 0;
@@ -123,6 +124,16 @@ void main_game()
 		if( keystates[SDLK_RIGHT] && player_position < SCREEN_WIDTH - PLAYER_WIDTH/2)
 		{
 			player_position++;
+		}
+
+		if( keystates[SDLK_UP] && player_position_y < SCREEN_HEIGHT - PLAYER_HEIGHT/2)
+		{
+			player_position_y++;
+		}
+
+		if( keystates[SDLK_DOWN] && player_position_y < PLAYER_HEIGHT/2)
+		{
+			player_position_y--;
 		}
 
 		apply_surface( 0, 0, background, screen );
