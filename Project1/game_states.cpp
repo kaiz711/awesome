@@ -71,6 +71,7 @@ void main_game()
 	int delay = 0;
 	int frames = 0;
 	int fps_calc_timer = SDL_GetTicks();
+	int score = 0;
 
 	while (quit == false)
 	{
@@ -94,6 +95,7 @@ void main_game()
 					new_ball.y = -(5+rand()% 350);
 					new_ball.w = new_ball.h = BALL_SIZE;
 					balls[i] = new_ball;
+					score++;
 				}
 			}
 			current_balls = MAX_BALLS;
@@ -146,7 +148,7 @@ void main_game()
 		apply_surface( player_position - PLAYER_WIDTH/2, SCREEN_HEIGHT - PLAYER_HEIGHT, player, screen );
 
 		std::stringstream caption;
-		caption << "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1));
+		caption << "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << "Score: " << score;
 		message = TTF_RenderText_Solid( font, caption.str().c_str(), textColor );
 		if (SDL_GetTicks() - fps_calc_timer > 5000)
 		{
