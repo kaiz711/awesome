@@ -165,11 +165,11 @@ void main_game()
 			player_rect.y = player_position_y - PLAYER_HEIGHT/2;
 			player_rect.w = PLAYER_WIDTH;
 			player_rect.h = PLAYER_HEIGHT;
-			/*if( intersects(balls[i], player_rect) )
+			if( intersects(balls[i], player_rect) )
 			{
 				game_over();
 				quit = true;
-			}*/
+			}
 		}
 		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );
 
