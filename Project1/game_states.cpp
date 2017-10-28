@@ -137,12 +137,12 @@ void main_game()
 
 		if( keystates[SDLK_UP] && player_position_y < SCREEN_HEIGHT - PLAYER_HEIGHT/2)
 		{
-			player_position_y++;
+			player_position_y--;
 		}
 
-		if( keystates[SDLK_DOWN] && player_position_y < PLAYER_HEIGHT/2)
+		if( keystates[SDLK_DOWN] && player_position_y > PLAYER_HEIGHT/2)
 		{
-			player_position_y--;
+			player_position_y++;
 		}
 
 		apply_surface( 0, 0, background, screen );
@@ -157,7 +157,7 @@ void main_game()
 			}
 			SDL_Rect player_rect;
 			player_rect.x = player_position - PLAYER_WIDTH/2;
-			player_rect.y = SCREEN_HEIGHT - PLAYER_HEIGHT;
+			player_rect.y = player_position_y - PLAYER_HEIGHT/2;
 			player_rect.w = PLAYER_WIDTH;
 			player_rect.h = PLAYER_HEIGHT;
 			if( intersects(balls[i], player_rect) )
@@ -166,7 +166,7 @@ void main_game()
 				quit = true;
 			}
 		}
-		apply_surface( player_position - PLAYER_WIDTH/2, SCREEN_HEIGHT - PLAYER_HEIGHT, player, screen );
+		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );
 
 		std::stringstream caption;
 		caption << /* "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << */"Score: " << score;
