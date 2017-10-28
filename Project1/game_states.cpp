@@ -65,6 +65,7 @@ void main_game()
 	int player_position_y = SCREEN_HEIGHT/2;
 	Uint8 *keystates = NULL;
 	int start_time  = SDL_GetTicks();
+	int level = 1;
 	int current_balls = 0;
 	int i = 0;
 
@@ -91,7 +92,7 @@ void main_game()
 			start_time = SDL_GetTicks();
 			for (i = 0; i < current_balls; i++)
 			{
-				balls[i].y += BALL_VELOCITY;
+				balls[i].y += BALL_VELOCITY*level;
 			}
 		}
 		if (current_balls < MAX_BALLS)
@@ -154,22 +155,27 @@ void main_game()
 			{
 				current_balls--;
 				score++;
+				if(score > LEVEL_UP_COUNT*level)
+				{
+					level++;
+				}
 			}
 			SDL_Rect player_rect;
 			player_rect.x = player_position - PLAYER_WIDTH/2;
 			player_rect.y = player_position_y - PLAYER_HEIGHT/2;
 			player_rect.w = PLAYER_WIDTH;
 			player_rect.h = PLAYER_HEIGHT;
-			if( intersects(balls[i], player_rect) )
+			/*if( intersects(balls[i], player_rect) )
 			{
 				game_over();
 				quit = true;
-			}
+			}*/
 		}
 		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );
 
 		std::stringstream caption;
-		caption << /* "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << */"Score: " << score;
+		caption << /* "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << */"Score: " << score
+		<< "       Level: " << level;
 		message = TTF_RenderText_Solid( font, caption.str().c_str(), textColor );
 		if (SDL_GetTicks() - fps_calc_timer > 5000)
 		{

@@ -12,6 +12,8 @@ const int MAX_BALLS = 25;
 
 const int BALL_VELOCITY = 2;
 
+const int LEVEL_UP_COUNT = 100;
+
 extern SDL_Surface *background;
 extern SDL_Surface *screen;
 extern SDL_Surface* message;
