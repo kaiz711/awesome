@@ -73,7 +73,6 @@ void main_game()
 	int frames = 0;
 	int fps_calc_timer = SDL_GetTicks();
 	int score = 0;
-<<<<<<< HEAD
 
 	for ( i = 0; i < MAX_BALLS; i++)
 	{
@@ -83,8 +82,6 @@ void main_game()
 		new_ball.w = new_ball.h = BALL_SIZE;
 		balls[i] = new_ball;
 	}
-=======
->>>>>>> 7eccdb20ceb839dbde4eaf3602c6694d1b453485
 
 	while (quit == false)
 	{
@@ -138,7 +135,6 @@ void main_game()
 			player_position++;
 		}
 
-<<<<<<< HEAD
 		if( keystates[SDLK_UP] && player_position_y > PLAYER_HEIGHT/2)
 		{
 			player_position_y--;
@@ -147,16 +143,6 @@ void main_game()
 		if( keystates[SDLK_DOWN] && player_position_y < SCREEN_HEIGHT - PLAYER_HEIGHT/2)
 		{
 			player_position_y++;
-=======
-		if( keystates[SDLK_UP] && player_position_y < SCREEN_HEIGHT - PLAYER_HEIGHT/2)
-		{
-			player_position_y++;
-		}
-
-		if( keystates[SDLK_DOWN] && player_position_y < PLAYER_HEIGHT/2)
-		{
-			player_position_y--;
->>>>>>> 7eccdb20ceb839dbde4eaf3602c6694d1b453485
 		}
 
 		apply_surface( 0, 0, background, screen );
@@ -171,11 +157,7 @@ void main_game()
 			}
 			SDL_Rect player_rect;
 			player_rect.x = player_position - PLAYER_WIDTH/2;
-<<<<<<< HEAD
 			player_rect.y = player_position_y - PLAYER_HEIGHT/2;
-=======
-			player_rect.y = player_position_y - PLAYER_HEIGHT;
->>>>>>> 7eccdb20ceb839dbde4eaf3602c6694d1b453485
 			player_rect.w = PLAYER_WIDTH;
 			player_rect.h = PLAYER_HEIGHT;
 			if( intersects(balls[i], player_rect) )
@@ -187,11 +169,7 @@ void main_game()
 		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );
 
 		std::stringstream caption;
-<<<<<<< HEAD
 		caption << /* "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << */"Score: " << score;
-=======
-		caption << "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << "Score: " << score;
->>>>>>> 7eccdb20ceb839dbde4eaf3602c6694d1b453485
 		message = TTF_RenderText_Solid( font, caption.str().c_str(), textColor );
 		if (SDL_GetTicks() - fps_calc_timer > 5000)
 		{
