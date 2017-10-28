@@ -4,6 +4,7 @@
 #include <string>
 #include <time.h>
 #include <sstream>
+#include <iostream>
 
 const int FRAMES_PER_SECOND = 200;
 

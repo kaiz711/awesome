@@ -1,5 +1,5 @@
 #include "game_states.h"
-#include <iostream>
+
 bool init()
 {
     if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
@@ -149,7 +149,7 @@ void main_game()
 		for (i = 0; i < MAX_BALLS; i++)
 		{
 			// printf("ball %i: %i %i\n",i , balls[i].x, balls[i].y);
-			apply_surface ( balls[i].x - BALL_SIZE/2, balls[i].y - BALL_SIZE/2, ball, screen);
+			apply_surface ( balls[i].x, balls[i].y, ball, screen);
 			if (balls[i].y > SCREEN_HEIGHT )
 			{
 				current_balls--;
@@ -157,14 +157,14 @@ void main_game()
 			}
 			SDL_Rect player_rect;
 			player_rect.x = player_position - PLAYER_WIDTH/2;
-			player_rect.y = player_position_y + PLAYER_HEIGHT;
-			player_rect.w = PLAYER_WIDTH/2;
+			player_rect.y = player_position_y - PLAYER_HEIGHT/2;
+			player_rect.w = PLAYER_WIDTH;
 			player_rect.h = PLAYER_HEIGHT;
-			/*if( intersects(balls[i], player_rect) )
+			if( intersects(balls[i], player_rect) )
 			{
 				game_over();
 				quit = true;
-			}*/
+			}
 		}
 		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );
 
