@@ -12,7 +12,7 @@ const int MAX_BALLS = 25;
 
 const int BALL_VELOCITY = 2;
 
-const int LEVEL_UP_COUNT = 100;
+const int LEVEL_UP_COUNT = 100;//level이 증가할때에 대비해서 추가
 
 extern SDL_Surface *background;
 extern SDL_Surface *screen;

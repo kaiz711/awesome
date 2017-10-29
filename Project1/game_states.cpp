@@ -65,7 +65,7 @@ void main_game()
 	int player_position_y = SCREEN_HEIGHT/2;
 	Uint8 *keystates = NULL;
 	int start_time  = SDL_GetTicks();
-	int level = 1;
+	int level = 1; // level 정의
 	int current_balls = 0;
 	int i = 0;
 
@@ -92,7 +92,7 @@ void main_game()
 			start_time = SDL_GetTicks();
 			for (i = 0; i < current_balls; i++)
 			{
-				balls[i].y += BALL_VELOCITY*level;
+				balls[i].y += BALL_VELOCITY*level;//level증가를 위해서 기존 값에 level을 곱해줌
 			}
 		}
 		if (current_balls < MAX_BALLS)
@@ -144,20 +144,20 @@ void main_game()
 		if( keystates[SDLK_DOWN] && player_position_y < SCREEN_HEIGHT - PLAYER_HEIGHT/2)
 		{
 			player_position_y++;
-		}
+		}//위 아래 이동 추가
 
 		apply_surface( 0, 0, background, screen );
 		for (i = 0; i < MAX_BALLS; i++)
 		{
 			// printf("ball %i: %i %i\n",i , balls[i].x, balls[i].y);
-			apply_surface ( balls[i].x, balls[i].y, ball, screen);
+			apply_surface ( balls[i].x, balls[i].y, ball, screen);//판정을 위해서 고친 부분
 			if (balls[i].y > SCREEN_HEIGHT )
 			{
 				current_balls--;
 				score++;
 				if(score > LEVEL_UP_COUNT*level)
 				{
-					level++;
+					level++;//socre의 상태에 따라 레벨 증가
 				}
 			}
 			SDL_Rect player_rect;
@@ -171,11 +171,11 @@ void main_game()
 				quit = true;
 			}
 		}
-		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );
+		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );//player표시를 이동에 따라 표시
 
 		std::stringstream caption;
 		caption << /* "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << */"Score: " << score
-		<< "       Level: " << level;
+		<< "       Level: " << level;//level 추가로 표시
 		message = TTF_RenderText_Solid( font, caption.str().c_str(), textColor );
 		if (SDL_GetTicks() - fps_calc_timer > 5000)
 		{

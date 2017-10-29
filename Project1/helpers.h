@@ -4,7 +4,7 @@
 #include <string>
 #include <time.h>
 #include <sstream>
-#include <iostream>
+#include <iostream>//출력 테스트를 위해서 추가
 
 const int FRAMES_PER_SECOND = 200;
 
