@@ -149,7 +149,7 @@ void main_game(int selector)//난이도 선택 변수
 			{
 				current_balls--;
 				score++;
-				if(score > LEVEL_UP_COUNT*level)
+				if(score > LEVEL_UP_COUNT * (level - selector))
 				{
 					level++;//socre의 상태에 따라 레벨 증가
 				}
