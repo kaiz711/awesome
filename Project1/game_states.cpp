@@ -58,14 +58,14 @@ void clean_up()
     SDL_Quit();
 }
 
-void main_game()
+void main_game(int selector)//난이도 선택 변수
 {
 	bool quit = false;
 	int player_position = SCREEN_WIDTH/2;
 	int player_position_y = SCREEN_HEIGHT/2;
 	Uint8 *keystates = NULL;
 	int start_time  = SDL_GetTicks();
-	int level = 1; // level 정의
+	int level = 1 + selector; // level 정의
 	int life = 3; // life 추가
 	int current_balls = 0;
 	int i = 0;
@@ -164,7 +164,7 @@ void main_game()
 				life--;
 				if (life <= 0) //life소진시 종료
 				{
-					game_over();
+					game_over(score);
 					quit = true;
 				}
 				else //life가 남아있으면 공 초기화후 계속
@@ -187,7 +187,7 @@ void main_game()
 			fps_calc_timer = SDL_GetTicks();
 		}
 		apply_surface(10, 10, message, screen);
-		apply_surface(SCREEN_WIDTH - 10 - message2->x, 10, message2, screen);
+		apply_surface(SCREEN_WIDTH - 10 - message2->w, 10, message2, screen);
 
 		SDL_Flip( screen );
 		frames++;
@@ -213,11 +213,15 @@ void init_ball()
 	}
 }
 
-void game_over()
+void game_over(int score)
 {
-	message = TTF_RenderText_Solid( font, "Game over", textColor );
 	apply_surface(0, 0, background, screen);
-	apply_surface( ( SCREEN_WIDTH - message->w ) / 2, ( SCREEN_HEIGHT - message->h ) / 2, message, screen );
+	message = TTF_RenderText_Solid(font, "Game over", textColor);
+	apply_surface((SCREEN_WIDTH - message->w) / 2, SCREEN_HEIGHT / 2 - message->h, message, screen);
+	std::stringstream caption;
+	caption << "Score is : " << score;
+	message = TTF_RenderText_Solid( font, caption.str().c_str(), textColor );
+	apply_surface((SCREEN_WIDTH - message->w) / 2, SCREEN_HEIGHT / 2 + message->h, message, screen);
 	SDL_Flip( screen );
 	while (true)
 	{
