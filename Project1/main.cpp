@@ -38,12 +38,12 @@ int main(int argc, char* argv[])
 			message = TTF_RenderText_Solid(font, "Press space to start, any other to quit", textColor);
 			apply_surface(0, 0, background, screen);
 			apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
-			message = TTF_RenderText_Solid(font, "초급\t\t중급\t\t고급", textColor);//난이도 선택기능
+			message = TTF_RenderText_Solid(font, "level 1         level 2         level 3", textColor);//난이도 선택기능
 			apply_surface((640 - message->w) / 2, 480 / 2 + message->h, message, screen);
-			message2 = TTF_RenderText_Solid(font, "초급\t\t", textColor);
+			message2 = TTF_RenderText_Solid(font, "level 1         ", textColor);
 			int tmp = message2->w;
 			message2 = TTF_RenderText_Solid(font, ">", textColor);//난이도 선택
-			apply_surface(640 / 2 - message->w -5 + selector * tmp, (480 + message->h) / 2, message, screen);
+			apply_surface((640 - message->w) / 2 - 5 + selector * tmp, 480 / 2 + message->h, message2, screen);
 			SDL_Flip(screen);
 			if (event.type == SDL_KEYDOWN)
 			{
