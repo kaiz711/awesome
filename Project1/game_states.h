@@ -17,6 +17,7 @@ const int LEVEL_UP_COUNT = 100;//level이 증가할때에 대비해서 추가
 extern SDL_Surface *background;
 extern SDL_Surface *screen;
 extern SDL_Surface* message;
+extern SDL_Surface* message2;
 extern SDL_Surface* player;
 extern SDL_Surface* ball;
 
@@ -32,4 +33,5 @@ bool load_files();
 void clean_up();
 
 void main_game();
+void init_ball();
 void game_over();

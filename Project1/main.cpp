@@ -5,6 +5,7 @@
 SDL_Surface *background = NULL;
 SDL_Surface *screen = NULL;
 SDL_Surface* message = NULL;
+SDL_Surface* message2 = NULL;
 SDL_Surface* player = NULL;
 SDL_Surface* ball = NULL;
 

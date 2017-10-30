@@ -66,6 +66,7 @@ void main_game()
 	Uint8 *keystates = NULL;
 	int start_time  = SDL_GetTicks();
 	int level = 1; // level 정의
+	int life = 3; // life 추가
 	int current_balls = 0;
 	int i = 0;
 
@@ -75,14 +76,7 @@ void main_game()
 	int fps_calc_timer = SDL_GetTicks();
 	int score = 0;
 
-	for ( i = 0; i < MAX_BALLS; i++)
-	{
-		SDL_Rect new_ball;
-		new_ball.x = BALL_SIZE/2 + rand() % (SCREEN_WIDTH - BALL_SIZE/2);
-		new_ball.y = -(5+rand()% 350);
-		new_ball.w = new_ball.h = BALL_SIZE;
-		balls[i] = new_ball;
-	}
+	init_ball();
 
 	while (quit == false)
 	{
@@ -92,7 +86,7 @@ void main_game()
 			start_time = SDL_GetTicks();
 			for (i = 0; i < current_balls; i++)
 			{
-				balls[i].y += BALL_VELOCITY*level;//level증가를 위해서 기존 값에 level을 곱해줌
+				balls[i].y += BALL_VELOCITY + level - 1;//level증가를 위해서 기존 값에 level을 곱해줌
 			}
 		}
 		if (current_balls < MAX_BALLS)
@@ -167,22 +161,33 @@ void main_game()
 			player_rect.h = PLAYER_HEIGHT;
 			if( intersects(balls[i], player_rect) )
 			{
-				game_over();
-				quit = true;
+				life--;
+				if (life <= 0) //life소진시 종료
+				{
+					game_over();
+					quit = true;
+				}
+				else //life가 남아있으면 공 초기화후 계속
+				{
+					init_ball();
+				}
 			}
 		}
 		apply_surface( player_position - PLAYER_WIDTH/2, player_position_y - PLAYER_HEIGHT/2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen );//player표시를 이동에 따라 표시
 
-		std::stringstream caption;
+		std::stringstream caption, caption2;
 		caption << /* "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << */"Score: " << score
 		<< "       Level: " << level;//level 추가로 표시
 		message = TTF_RenderText_Solid( font, caption.str().c_str(), textColor );
+		caption2 << "Life: " << life;
+		message2 = TTF_RenderText_Solid(font, caption2.str().c_str(), textColor);
 		if (SDL_GetTicks() - fps_calc_timer > 5000)
 		{
 			frames = 1;
 			fps_calc_timer = SDL_GetTicks();
 		}
-		apply_surface(10,10, message, screen);
+		apply_surface(10, 10, message, screen);
+		apply_surface(SCREEN_WIDTH - 10 - message2->x, 10, message2, screen);
 
 		SDL_Flip( screen );
 		frames++;
@@ -193,6 +198,18 @@ void main_game()
         {
             SDL_Delay( ( 1000 / FRAMES_PER_SECOND ) - delay );
         }
+	}
+}
+
+void init_ball()
+{
+	for (int i = 0; i < MAX_BALLS; i++)
+	{
+		SDL_Rect new_ball;
+		new_ball.x = BALL_SIZE / 2 + rand() % (SCREEN_WIDTH - BALL_SIZE / 2);
+		new_ball.y = -(5 + rand() % 350);
+		new_ball.w = new_ball.h = BALL_SIZE;
+		balls[i] = new_ball;
 	}
 }
 
