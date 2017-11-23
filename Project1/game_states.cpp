@@ -144,70 +144,75 @@ void main_game(int selector)//난이도 선택 변수
 	int randomball[MAX_BALLS]; // 떨어지는 볼의 속도를 랜덤하게 조정하기 위해 선언한 배열
 
   /*socket programming을 위해 필요한 변수 부분 추가 시작()*/
-	int socket_selector = 0;//0 = server, 1 = client
-	int client, server;
-	int portNum = 1500;
-	bool isExit = false;
-	int bufsize = 1024;
-	char buffer[bufsize];
-	int buffer_int[bufsize / 4];
-	int clientCount = 1;
+	int socket_selector = 0;//0 = server, 1 = client, 3 = single
+    int client, server;
+    int portNum = 1500;
+    bool isExit = false;
+    int bufsize = 1024;
+    char buffer[bufsize];
+    int buffer_int[bufsize/4];
+    int clientCount = 1;
+    unsigned int time_now;
+    char* ip = "127.0.0.1";
 
-	struct sockaddr_in server_addr;
-	socklen_t size;
+    struct sockaddr_in server_addr;
+    socklen_t size;
 
-	/* ---------- ESTABLISHING SOCKET CONNECTION ----------*/
-	/* --------------- socket() function ------------------*/
+    /* ---------- ESTABLISHING SOCKET CONNECTION ----------*/
+    /* --------------- socket() function ------------------*/
 
-	client = socket(AF_INET, SOCK_STREAM, 0);
+    client = socket(AF_INET, SOCK_STREAM, 0);
 
-	if (client < 0)
-	{
-		cout << "\n소켓 준비 에러..." << endl;
-		exit(1);
-	}
+    if (client < 0)
+    {
+        cout << "\n소켓 준비 에러..." << endl;
+        exit(1);
+    }
 
-	cout << "\n=> 소켓 생성 완료..." << endl;
+    cout << "\n=> 소켓 생성 완료..." << endl;
 
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = htons(INADDR_ANY);
-	server_addr.sin_port = htons(portNum);
-	/*socket programming을 위해 필요한 변수 부분 추가 끝()*/
-
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(portNum);
+/*socket programming을 위해 필요한 변수 부분 추가 끝()*/
 
 
-	switch (socket_selector)
-	{
-		//server
-	case 0:
-		if ((bind(client, (struct sockaddr*)&server_addr, sizeof(server_addr))) < 0)
-		{
-			cout << "=> Error binding connection, the socket has already been established..." << endl;
-			exit(1);
-		}
-		size = sizeof(server_addr);
-		cout << "=> Looking for clients..." << endl;
-		/* ------------- LISTENING CALL ------------- */
-		/* ---------------- listen() ---------------- */
-		listen(client, 1);
-		/* ------------- ACCEPTING CLIENTS  ------------- */
-		/* ----------------- listen() ------------------- */
 
-		server = accept(client, (struct sockaddr *)&server_addr, &size);
+switch(socket_selector)
+{
+  //server
+  case SERVER_MODE:
+  server_addr.sin_addr.s_addr = htons(INADDR_ANY);
+  while ((bind(client, (struct sockaddr*)&server_addr,sizeof(server_addr))) < 0)
+      {
+          cout << "=> Error binding connection, the socket has already been established..." << endl;
+      }
+      size = sizeof(server_addr);
+      cout << "=> Looking for clients..." << endl;
+      /* ------------- LISTENING CALL ------------- */
+      /* ---------------- listen() ---------------- */
+      listen(client, 1);
+      /* ------------- ACCEPTING CLIENTS  ------------- */
+      /* ----------------- listen() ------------------- */
 
-		// first check if it is valid or not
-		if (server < 0)
-			cout << "=> Error on accepting..." << endl;
+      server = accept(client,(struct sockaddr *)&server_addr,&size);
 
-		break;
-		//client
-	case 1:
-		while (connect(client, (struct sockaddr *)&server_addr, sizeof(server_addr)) != 0)
-		{
-		}
-		cout << "연결 완료!" << endl;
-		cout << "=> 연결된 서버 포트 번호: " << portNum << endl;
-	}
+      // first check if it is valid or not
+      if (server < 0)
+          cout << "=> Error on accepting..." << endl;
+      buffer_int[0] = (unsigned int)time(NULL);
+      send(server, buffer_int, bufsize, 0);
+      srand(buffer_int[0]);
+      break;
+  //client
+  case CLIENT_MODE:
+  inet_pton(AF_INET, ip, &server_addr.sin_addr);
+  while (connect(client,(struct sockaddr *)&server_addr, sizeof(server_addr)) != 0)
+      {    }
+  cout << "연결 완료!" << endl;
+  cout << "=> 연결된 서버 포트 번호: " << portNum << endl;
+  recv(client, buffer_int, bufsize, 0);
+  srand(buffer_int[0]);
+}
 
 	for (i = 0; i < MAX_BALLS; i++)
 		randomball[i] = 0;
@@ -311,6 +316,17 @@ void main_game(int selector)//난이도 선택 변수
 				life--;
 				if (life <= 0) //life소진시 종료
 				{
+					if(socket_selector == SERVER_MODE || socket_selector == CLIENT_MODE)
+					{
+					cout << "Last: ";
+          buffer_int[0] = player_position;
+          buffer_int[1] = player_position_y;
+          buffer_int[2] = life;
+          cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
+          send(client, buffer_int, bufsize, 0);
+          close(client);
+          close(server);
+				}
 					game_over(score);
 					quit = true;
 				}
@@ -347,7 +363,7 @@ void main_game(int selector)//난이도 선택 변수
 		switch (socket_selector)
 		{
 			//server side
-		case 0:
+		case SERVER_MODE:
 			cout << "Client: ";
 			if (enemy_life != 0) { recv(server, buffer_int, bufsize, 0); }
 			player2_position = buffer_int[0];
@@ -363,7 +379,7 @@ void main_game(int selector)//난이도 선택 변수
 			break;
 
 			//client side
-		case 1:
+		case CLIENT_MODE:
 			if (enemy_life == 0) break;
 			cout << "Client: ";
 			buffer_int[0] = player_position;
