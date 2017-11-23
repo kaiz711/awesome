@@ -42,3 +42,4 @@ void main_game(int selector);
 void init_ball();
 void game_over(int score);
 void menu();
+void show_select_mode(int selector);
