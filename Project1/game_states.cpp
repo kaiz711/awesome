@@ -117,7 +117,7 @@ void clean_up()
     SDL_Quit();
 }
 
-void main_game(int selector)//난이도 선택 변수
+void main_game(int selector, int mode)//난이도 선택 변수
 {
 	using namespace std;
 	bool quit = false;
@@ -134,6 +134,7 @@ void main_game(int selector)//난이도 선택 변수
 	int enemy_life = 3;
 	int current_balls = 0;
 	int i = 0;
+  int Die_Count = 0;
 
 	int fps_timer = 0;
 	int delay = 0;
@@ -177,7 +178,7 @@ void main_game(int selector)//난이도 선택 변수
 
 
 
-switch(socket_selector)
+switch(mode)
 {
   //server
   case SERVER_MODE:
@@ -212,6 +213,8 @@ switch(socket_selector)
   cout << "=> 연결된 서버 포트 번호: " << portNum << endl;
   recv(client, buffer_int, bufsize, 0);
   srand(buffer_int[0]);
+  case SINGLE_MODE:
+  srand((unsigned int)time(NULL));
 }
 
 	for (i = 0; i < MAX_BALLS; i++)
@@ -311,33 +314,41 @@ switch(socket_selector)
 			player_rect2.y = player2_position_y - PLAYER_HEIGHT / 2;
 			player_rect2.w = PLAYER_WIDTH;
 			player_rect2.h = PLAYER_HEIGHT;
-			if (intersects(balls[i], player_rect))
+			if (intersects(balls[i], player_rect) && Die_Count == 0)
 			{
 				life--;
 				if (life <= 0) //life소진시 종료
 				{
-					if(socket_selector == SERVER_MODE || socket_selector == CLIENT_MODE)
+					if(socket_selector == SERVER_MODE || socket_selector == SERVER_MODE)//Socket 일때 만 실행
 					{
-					cout << "Last: ";
-          buffer_int[0] = player_position;
-          buffer_int[1] = player_position_y;
-          buffer_int[2] = life;
-          cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
-          send(client, buffer_int, bufsize, 0);
-          close(client);
-          close(server);
-				}
-					game_over(score);
+            cout << "Last: ";
+            buffer_int[0] = player_position;
+            buffer_int[1] = player_position_y;
+            buffer_int[2] = life;
+            cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
+            send(client, buffer_int, bufsize, 0);
+  					game_over(score);
+            close(client);
+            close(server);
+          }
 					quit = true;
 				}
 				else //life가 남아있으면 공 초기화후 계속
 				{
-					init_ball();
+					Die_Count++;
 				}
 			}
 		}
-		apply_surface(player_position - PLAYER_WIDTH / 2, player_position_y - PLAYER_HEIGHT / 2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen);//player표시를 이동에 따라 표시
-		apply_surface(player2_position - PLAYER_WIDTH / 2, player2_position_y - PLAYER_HEIGHT / 2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player2, screen);//player2표시를 이동에 따라 표시
+    if(Die_Count == 0 || Die_Count%3 == 0)
+    {
+      if(Die_Count >= 300) Die_Count = 0;
+      apply_surface(player_position - PLAYER_WIDTH / 2, player_position_y - PLAYER_HEIGHT / 2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen);//player표시를 이동에 따라 표시
+    }
+    if(socket_selector == SERVER_MODE || socket_selector == SERVER_MODE)//Socket 일때 만 표시
+    {
+      apply_surface(player2_position - PLAYER_WIDTH / 2, player2_position_y - PLAYER_HEIGHT / 2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player2, screen);//player2표시를 이동에 따라 표시
+    }
+
 
 		std::stringstream caption, caption2;
 		caption << /* "FPS: " << (int)(frames*1000.0/(SDL_GetTicks() - fps_calc_timer+1)) << */"Score: " << score
@@ -360,7 +371,7 @@ switch(socket_selector)
 
 		/*  Socket 통신을 위한 부분 추가  */
 
-		switch (socket_selector)
+		switch (mode)
 		{
 			//server side
 		case SERVER_MODE:
@@ -394,6 +405,8 @@ switch(socket_selector)
 			enemy_life = buffer_int[2];
 			cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
 			break;
+    case SINGLE_MODE:
+      break;
 		}
 
 		if (delay < 1000 / FRAMES_PER_SECOND)
@@ -401,12 +414,6 @@ switch(socket_selector)
 			SDL_Delay((1000 / FRAMES_PER_SECOND) - delay);
 		}
 	}
-	cout << "Last: ";
-	buffer_int[0] = player_position;
-	buffer_int[1] = player_position_y;
-	buffer_int[2] = life;
-	cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
-	send(client, buffer_int, bufsize, 0);
 }
 
 void init_ball()
