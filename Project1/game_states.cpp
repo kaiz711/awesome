@@ -143,21 +143,21 @@ int waiting()
 	int i = 0;
 	while (quit == false)
 	{
+		SDL_Delay(100);
+		std::string str = "Waiting";
+		for (int j = 0; j < i; j++) str += " .";
+		message = TTF_RenderText_Solid(font, str.c_str(), textColor);
+		apply_surface(0, 0, background, screen);
+		apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
+		/*message = TTF_RenderText_Solid(font, "Single         Multi", textColor);
+		apply_surface((640 - message->w) / 2, 480 / 2 + message->h, message, screen);
+		message2 = TTF_RenderText_Solid(font, "Single         ", textColor);
+		int tmp = message2->w;
+		message2 = TTF_RenderText_Solid(font, ">", textColor);
+		apply_surface((640 - message->w) / 2 - 8 + mode * tmp, 480 / 2 + message->h, message2, screen);*/
+		SDL_Flip(screen);
 		if (SDL_PollEvent(&event))
 		{
-			SDL_Delay(100);
-			std::string str = "Waiting";
-			for (int j = 0; j < i; j++) str += " .";
-			message = TTF_RenderText_Solid(font, str.c_str(), textColor);
-			apply_surface(0, 0, background, screen);
-			apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
-			/*message = TTF_RenderText_Solid(font, "Single         Multi", textColor);
-			apply_surface((640 - message->w) / 2, 480 / 2 + message->h, message, screen);
-			message2 = TTF_RenderText_Solid(font, "Single         ", textColor);
-			int tmp = message2->w;
-			message2 = TTF_RenderText_Solid(font, ">", textColor);
-			apply_surface((640 - message->w) / 2 - 8 + mode * tmp, 480 / 2 + message->h, message2, screen);*/
-			SDL_Flip(screen);
 			if (event.type == SDL_KEYDOWN)
 			{
 				switch (event.key.keysym.sym)
