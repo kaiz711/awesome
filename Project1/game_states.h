@@ -40,7 +40,7 @@ bool init();
 bool load_files();
 void clean_up();
 
-void main_game(int selector);
+void main_game(int selector, int mode);
 void init_ball();
 void game_over(int score);
 void menu();
