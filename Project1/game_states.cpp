@@ -74,6 +74,7 @@ int select_mode()
 			}
 			else if (event.type == SDL_QUIT)
 			{
+				return EXIT;
 				quit = true;
 			}
 		}
@@ -131,6 +132,7 @@ int select_level()
 			}
 			else if (event.type == SDL_QUIT)
 			{
+				return EXIT;
 				quit = true;
 			}
 		}
@@ -165,6 +167,7 @@ int waiting()
 			}
 			else if (event.type == SDL_QUIT)
 			{
+				return EXIT;
 				quit = true;
 			}
 		}
