@@ -117,7 +117,7 @@ void clean_up()
     SDL_Quit();
 }
 
-void main_game(int selector, int mode)//난이도 선택 변수
+void main_game(int selector)//난이도 선택 변수
 {
 	using namespace std;
 	bool quit = false;
@@ -143,7 +143,7 @@ void main_game(int selector, int mode)//난이도 선택 변수
 	int score = 0;
 
 	int randomball[MAX_BALLS]; // 떨어지는 볼의 속도를 랜덤하게 조정하기 위해 선언한 배열
-
+	int mode = 2;//0 = SINGLE_MODE, 1 = MULTI_MODE, 2 = SERVER_MODE, 3 = CLIENT_MODE
   /*socket programming을 위해 필요한 변수 부분 추가 시작()*/
 	int socket_selector = 0;//0 = server, 1 = client, 3 = single
     int client, server;
@@ -167,7 +167,6 @@ void main_game(int selector, int mode)//난이도 선택 변수
     if (client < 0)
     {
         cout << "\n소켓 준비 에러..." << endl;
-        exit(1);
     }
 
     cout << "\n=> 소켓 생성 완료..." << endl;
@@ -183,27 +182,27 @@ switch(mode)
   //server
   case SERVER_MODE:
   server_addr.sin_addr.s_addr = htons(INADDR_ANY);
-  while ((bind(client, (struct sockaddr*)&server_addr,sizeof(server_addr))) < 0)
-      {
-          cout << "=> Error binding connection, the socket has already been established..." << endl;
-      }
-      size = sizeof(server_addr);
-      cout << "=> Looking for clients..." << endl;
-      /* ------------- LISTENING CALL ------------- */
-      /* ---------------- listen() ---------------- */
-      listen(client, 1);
-      /* ------------- ACCEPTING CLIENTS  ------------- */
-      /* ----------------- listen() ------------------- */
+	if((bind(client, (struct sockaddr*)&server_addr,sizeof(server_addr))) < 0)
+	{
+		cout << "=> Error binding connection, the socket has already been established..." << endl;
+	}
 
-      server = accept(client,(struct sockaddr *)&server_addr,&size);
+	size = sizeof(server_addr);
+  cout << "=> Looking for clients..." << endl;
+  /* ------------- LISTENING CALL ------------- */
+  /* ---------------- listen() ---------------- */
+  listen(client, 1);
+  /* ------------- ACCEPTING CLIENTS  ------------- */
+  /* ----------------- listen() ------------------- */
+  server = accept(client,(struct sockaddr *)&server_addr,&size);
 
-      // first check if it is valid or not
-      if (server < 0)
-          cout << "=> Error on accepting..." << endl;
-      buffer_int[0] = (unsigned int)time(NULL);
-      send(server, buffer_int, bufsize, 0);
-      srand(buffer_int[0]);
-      break;
+  // first check if it is valid or not
+  if (server < 0)
+      cout << "=> Error on accepting..." << endl;
+  buffer_int[0] = (unsigned int)time(NULL);
+  send(server, buffer_int, bufsize, 0);
+  srand(buffer_int[0]);
+  break;
   //client
   case CLIENT_MODE:
   inet_pton(AF_INET, ip, &server_addr.sin_addr);
@@ -319,18 +318,48 @@ switch(mode)
 				life--;
 				if (life <= 0) //life소진시 종료
 				{
-					if(socket_selector == SERVER_MODE || socket_selector == SERVER_MODE)//Socket 일때 만 실행
+					if (enemy_life == 0)
+					switch (mode)
 					{
-            cout << "Last: ";
-            buffer_int[0] = player_position;
-            buffer_int[1] = player_position_y;
-            buffer_int[2] = life;
-            cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
-            send(client, buffer_int, bufsize, 0);
-  					game_over(score);
-            close(client);
-            close(server);
-          }
+						//server side
+					case SERVER_MODE:
+					  cout << "SERVER SIDE :";
+						cout << "Last Client: ";
+						recv(server, buffer_int, bufsize, 0);
+						player2_position = buffer_int[0];
+						player2_position_y = buffer_int[1];
+						enemy_life = buffer_int[2];
+						cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
+						buffer_int[0] = player_position;
+						buffer_int[1] = player_position_y;
+						buffer_int[2] = life;
+						cout << "Last Server: ";
+						cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
+						send(server, buffer_int, bufsize, 0);
+						break;
+
+						//client side
+					case CLIENT_MODE:
+					  cout << "CLIENT SIDE :";
+						cout << "Last Client: ";
+						buffer_int[0] = player_position;
+						buffer_int[1] = player_position_y;
+						buffer_int[2] = life;
+						cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
+						send(client, buffer_int, bufsize, 0);
+						cout << "Last Server: ";
+						recv(client, buffer_int, bufsize, 0);
+						player2_position = buffer_int[0];
+						player2_position_y = buffer_int[1];
+						enemy_life = buffer_int[2];
+						cout << buffer_int[0] << " " << buffer_int[1] << " " << buffer_int[2] << endl;
+						break;
+			    case SINGLE_MODE:
+			      break;
+					}
+					close(client);
+					close(server);
+					game_over(score);
 					quit = true;
 				}
 				else //life가 남아있으면 공 초기화후 계속
@@ -339,12 +368,14 @@ switch(mode)
 				}
 			}
 		}
-    if(Die_Count == 0 || Die_Count%3 == 0)
+    if(Die_Count == 0 || Die_Count%2 == 0)
     {
-      if(Die_Count >= 300) Die_Count = 0;
+      if(Die_Count >= 600) Die_Count = 0;
       apply_surface(player_position - PLAYER_WIDTH / 2, player_position_y - PLAYER_HEIGHT / 2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player, screen);//player표시를 이동에 따라 표시
     }
-    if(socket_selector == SERVER_MODE || socket_selector == SERVER_MODE)//Socket 일때 만 표시
+		if(Die_Count > 0) Die_Count++;
+
+    if((mode == CLIENT_MODE || mode == SERVER_MODE) && enemy_life > 0)//Socket 일때 만 표시
     {
       apply_surface(player2_position - PLAYER_WIDTH / 2, player2_position_y - PLAYER_HEIGHT / 2/*SCREEN_HEIGHT - PLAYER_HEIGHT*/, player2, screen);//player2표시를 이동에 따라 표시
     }
@@ -370,13 +401,13 @@ switch(mode)
 		delay = SDL_GetTicks() - fps_timer;
 
 		/*  Socket 통신을 위한 부분 추가  */
-
+		if (enemy_life != 0)
 		switch (mode)
 		{
 			//server side
 		case SERVER_MODE:
 			cout << "Client: ";
-			if (enemy_life != 0) { recv(server, buffer_int, bufsize, 0); }
+			recv(server, buffer_int, bufsize, 0);
 			player2_position = buffer_int[0];
 			player2_position_y = buffer_int[1];
 			enemy_life = buffer_int[2];
@@ -391,7 +422,6 @@ switch(mode)
 
 			//client side
 		case CLIENT_MODE:
-			if (enemy_life == 0) break;
 			cout << "Client: ";
 			buffer_int[0] = player_position;
 			buffer_int[1] = player_position_y;
