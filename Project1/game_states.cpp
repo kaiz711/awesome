@@ -2,13 +2,102 @@
 
 void menu()
 {
+	int mode = INITIAL_MODE;
+	int level = 0;
+
+	while (mode != EXIT)
+	{
+		switch (mode)
+		{
+		case INITIAL_MODE:
+			mode = select_mode();
+			break;
+		case SINGLE_MODE:
+			mode = select_level();
+			break;
+		case MULTI_MODE:
+			mode = waiting();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+int select_mode()
+{
+	bool quit = false;
+	int mode = 0;
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+			message = TTF_RenderText_Solid(font, "Press space to start, esc key to quit", textColor);
+			apply_surface(0, 0, background, screen);
+			apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
+			message = TTF_RenderText_Solid(font, "Single         Multi", textColor);
+			apply_surface((640 - message->w) / 2, 480 / 2 + message->h, message, screen);
+			message2 = TTF_RenderText_Solid(font, "Single         ", textColor);
+			int tmp = message2->w;
+			message2 = TTF_RenderText_Solid(font, ">", textColor);
+			apply_surface((640 - message->w) / 2 - 8 + mode * tmp, 480 / 2 + message->h, message2, screen);
+			SDL_Flip(screen);
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_RIGHT:
+				{
+					if (mode >= 1) break;
+					mode++;
+					break;
+				}
+				case SDLK_LEFT:
+				{
+					if (mode <= 0) break;
+					mode--;
+					break;
+				}
+				case SDLK_SPACE:
+				{
+					message = NULL;
+					if (mode == 1) return MULTI_MODE;
+					else if (mode == 0) return SINGLE_MODE;
+					break;
+				}
+				case SDLK_ESCAPE://esc 키가 눌리면 종료
+					return EXIT;
+					break;
+				default:
+					break;
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+int select_level()
+{
 	bool quit = false;
 	int selector = 0;
 	while (quit == false)
 	{
 		if (SDL_PollEvent(&event))
 		{
-			show_select_mode(selector);
+			message = TTF_RenderText_Solid(font, "Press space to start, esc key to quit", textColor);
+			apply_surface(0, 0, background, screen);
+			apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
+			message = TTF_RenderText_Solid(font, "level 1         level 2         level 3", textColor);
+			apply_surface((640 - message->w) / 2, 480 / 2 + message->h, message, screen);
+			message2 = TTF_RenderText_Solid(font, "level 1         ", textColor);
+			int tmp = message2->w;
+			message2 = TTF_RenderText_Solid(font, ">", textColor);
+			apply_surface((640 - message->w) / 2 - 8 + selector * tmp, 480 / 2 + message->h, message2, screen);
+			SDL_Flip(screen);
 			if (event.type == SDL_KEYDOWN)
 			{
 				switch (event.key.keysym.sym)
@@ -30,9 +119,13 @@ void menu()
 					message = NULL;
 					init();
 					main_game(selector);
+					return INITIAL_MODE;
 					break;
 				}
-				default: quit = true;
+				case SDLK_ESCAPE://esc 키가 눌리면 종료
+					return INITIAL_MODE;
+					break;
+				default:
 					break;
 				}
 			}
@@ -44,18 +137,39 @@ void menu()
 	}
 }
 
-void show_select_mode(int selector)
+int waiting()
 {
-	message = TTF_RenderText_Solid(font, "Press space to start, any other to quit", textColor);
-	apply_surface(0, 0, background, screen);
-	apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
-	message = TTF_RenderText_Solid(font, "level 1         level 2         level 3", textColor);//���̵� ���ñ���
-	apply_surface((640 - message->w) / 2, 480 / 2 + message->h, message, screen);
-	message2 = TTF_RenderText_Solid(font, "level 1         ", textColor);
-	int tmp = message2->w;
-	message2 = TTF_RenderText_Solid(font, ">", textColor);//���̵� ����
-	apply_surface((640 - message->w) / 2 - 8 + selector * tmp, 480 / 2 + message->h, message2, screen);
-	SDL_Flip(screen);
+	while (true)
+	{
+		if (SDL_PollEvent(&event))
+		{
+			message = TTF_RenderText_Solid(font, "Waiting . . .", textColor);
+			apply_surface(0, 0, background, screen);
+			apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
+			/*message = TTF_RenderText_Solid(font, "Single         Multi", textColor);
+			apply_surface((640 - message->w) / 2, 480 / 2 + message->h, message, screen);
+			message2 = TTF_RenderText_Solid(font, "Single         ", textColor);
+			int tmp = message2->w;
+			message2 = TTF_RenderText_Solid(font, ">", textColor);
+			apply_surface((640 - message->w) / 2 - 8 + mode * tmp, 480 / 2 + message->h, message2, screen);*/
+			SDL_Flip(screen);
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE://esc 키가 눌리면 종료
+					return INITIAL_MODE;
+					break;
+				default:
+					break;
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
 }
 
 bool init()
