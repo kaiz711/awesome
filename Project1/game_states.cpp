@@ -164,10 +164,10 @@ int waiting()
 					break;
 				}
 			}
-			else if (event.type == SDL_QUIT)
+			/*else if (event.type == SDL_QUIT)
 			{
 				quit = true;
-			}
+			}*/
 		}
 	}
 }
