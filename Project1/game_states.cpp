@@ -139,11 +139,16 @@ int select_level()
 
 int waiting()
 {
-	while (true)
+	bool quit = false;
+	int i = 0;
+	while (quit == false)
 	{
 		if (SDL_PollEvent(&event))
 		{
-			message = TTF_RenderText_Solid(font, "Waiting . . .", textColor);
+			SDL_Delay(100);
+			std::string str = "Waiting";
+			for (int j = 0; j < i; j++) str += " .";
+			message = TTF_RenderText_Solid(font, str.c_str(), textColor);
 			apply_surface(0, 0, background, screen);
 			apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
 			/*message = TTF_RenderText_Solid(font, "Single         Multi", textColor);
@@ -164,12 +169,15 @@ int waiting()
 					break;
 				}
 			}
-			/*else if (event.type == SDL_QUIT)
+			else if (event.type == SDL_QUIT)
 			{
 				quit = true;
-			}*/
+			}
 		}
+		i = (i + 1) % 4;
 	}
+
+	return INITIAL_MODE;
 }
 
 bool init()
