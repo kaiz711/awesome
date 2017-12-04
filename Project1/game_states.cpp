@@ -157,24 +157,6 @@ int waiting(bool *isConnect)
 		apply_surface(0, 0, background, screen);
 		apply_surface((640 - message->w) / 2, 480 / 2 - message->h, message, screen);
 		SDL_Flip(screen);
-		if (SDL_PollEvent(&event))
-		{
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE://esc 키가 눌리면 종료
-					return INITIAL_MODE;
-					break;
-				default:
-					break;
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				return EXIT;
-			}
-		}
 		SDL_Delay(500);
 	}
 
@@ -259,7 +241,9 @@ int socketing()
 		listen(client, 1);
 
 		std::thread listenFor(waitClient, &isConnect);
+		std::cout << "thread1" << std::endl;
 		std::thread waitingMassage(waiting, &isConnect);
+		std::cout << "thread2" << std::endl;
 
 		while (!isConnect)
 		{
