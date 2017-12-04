@@ -10,12 +10,15 @@ void menu()
 		switch (mode)
 		{
 		case INITIAL_MODE:
+			std::cout << "start" << std::endl;
 			mode = select_mode();
 			break;
 		case SINGLE_MODE:
+			std::cout << "Single" << std::endl;
 			mode = select_level();
 			break;
 		case MULTI_MODE:
+			std::cout << "Multi" << std::endl;
 			mode = socketing();
 			break;
 		default:
